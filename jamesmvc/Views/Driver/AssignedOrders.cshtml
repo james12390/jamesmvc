@@ -1,0 +1,41 @@
+﻿@model List<jamesmvc.Models.LogisticsOrder>
+<h2>指派給我的物流單</h2>
+@if (!Model.Any())
+{
+    <p>目前尚未有指派任務。</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>物流單號</th>
+                <th>寄件人</th>
+                <th>寄件人電話</th>
+                <th>收件人</th>
+                <th>收件人電話</th>
+                <th>預計配送日</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.OrderNumber</td>
+                    <td>@order.SenderName</td>
+                    <td>@order.SenderPhone</td>
+                    <td>@order.ReceiverName</td>
+                    <td>@order.ReceiverPhone</td>
+                    <td>@order.DeliveryDate.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <a class="btn btn-sm btn-info"
+                           asp-controller="Driver" asp-action="UpdateTracking" asp-route-id="@order.Id">
+                            更新追蹤進度
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

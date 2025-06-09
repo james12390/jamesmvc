@@ -1,0 +1,54 @@
+﻿@model List<jamesmvc.Models.LogisticsOrder>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "尚未指派物流單";
+}
+
+<h2>尚未指派的物流單</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+@if (!Model.Any())
+{
+    <p class="text-muted">目前所有物流單都已指派。</p>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>單號</th>
+                <th>收件人</th>
+                <th>地址</th>
+                <th>指派司機</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.OrderNumber</td>
+                    <td>@order.ReceiverName</td>
+                    <td>@($"{order.ReceiverCity}{order.ReceiverDistrict} {order.ReceiverAddress}")</td>
+                    <td>
+                        <form asp-action="AssignDriver" method="post" class="form-inline">
+                            <input type="hidden" name="orderId" value="@order.Id" />
+                            <select name="driverId" class="form-control mr-2">
+                                <option value="">請選擇</option>
+                                @foreach (var d in (SelectList)ViewBag.DriverList)
+                                {
+                                    <option value="@d.Value">@d.Text</option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-primary">指派</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,40 @@
+﻿@model jamesmvc.Models.LogisticsOrder
+
+@{
+    ViewData["Title"] = "物流單詳細資料";
+}
+
+<h2>物流單詳細資料</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>物流單號</th>
+        <td>@Model.OrderNumber</td>
+    </tr>
+    <tr>
+        <th>寄件人</th>
+        <td>@Model.SenderName</td>
+    </tr>
+    <tr>
+        <th>寄件地址</th>
+        <td>@Model.SenderAddress</td>
+    </tr>
+    <tr>
+        <th>收件人</th>
+        <td>@Model.ReceiverName</td>
+    </tr>
+    <tr>
+        <th>收件地址</th>
+        <td>@Model.ReceiverAddress</td>
+    </tr>
+    <tr>
+        <th>物品描述</th>
+        <td>@Model.ItemDescription</td>
+    </tr>
+    <tr>
+        <th>預計配送日</th>
+        <td>@Model.DeliveryDate.ToString("yyyy/MM/dd")</td>
+    </tr>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">返回清單</a>

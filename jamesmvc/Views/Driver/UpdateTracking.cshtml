@@ -1,0 +1,26 @@
+﻿@model jamesmvc.Models.TrackingRecord
+<h2>更新配送進度 - @ViewBag.OrderNumber</h2>
+
+<form asp-action="AddTracking" method="post">
+    <input type="hidden" name="orderId" value="@Model.LogisticsOrderId" />
+
+    <div class="form-group">
+        <label asp-for="Status">目前狀態</label>
+        <select asp-for="Status" class="form-control">
+            <option>已接單</option>
+            <option>已出發</option>
+            <option>配送中</option>
+            <option>已簽收</option>
+        </select>
+        <span asp-validation-for="Status" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Location">目前位置</label>
+        <input asp-for="Location" class="form-control" />
+        <span asp-validation-for="Location" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">提交紀錄</button>
+    <a asp-action="AssignedOrders" class="btn btn-secondary">返回列表</a>
+</form>

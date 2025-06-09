@@ -1,0 +1,52 @@
+﻿@model IEnumerable<jamesmvc.Models.UserWithRoleViewModel>
+@{
+    ViewData["Title"] = "管理員首頁";
+}
+
+<h2>管理員控制台</h2>
+
+<ul class="nav nav-tabs mt-3">
+    <li class="nav-item">
+        <a class="nav-link active" href="#">身分控制台</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Admin" asp-action="ManageDrivers">司機服務範圍</a>
+    </li>
+</ul>
+
+<div class="mt-4">
+    <p>你可以在上方切換到其他功能。</p>
+</div>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>目前角色</th>
+            <th>更改角色</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.CurrentRole</td>
+                <td>
+                    <form asp-action="ChangeRole" method="post">
+                        <input type="hidden" name="userId" value="@user.UserId" />
+                        <select name="newRole" class="form-control d-inline w-auto">
+                            @foreach (var role in user.AvailableRoles)
+                            {
+                                <option value="@role" selected="@(role == user.CurrentRole)">
+                                    @role
+                                </option>
+                            }
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-primary ml-2">變更</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

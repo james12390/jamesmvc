@@ -1,0 +1,56 @@
+﻿@model List<jamesmvc.Models.DriverWithProfilesViewModel>
+
+@{
+    ViewData["Title"] = "管理司機服務範圍";
+}
+
+<h2>管理司機服務範圍</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@foreach (var driver in Model)
+{
+    <div class="card mb-3">
+        <div class="card-header">
+            @driver.Email
+        </div>
+        <div class="card-body">
+            <h5>目前服務範圍：</h5>
+            @if (driver.Profiles.Any())
+            {
+                <ul>
+                    @foreach (var profile in driver.Profiles)
+                    {
+                        <li>@profile.ServiceCity @profile.ServiceDistrict</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>尚未設定服務範圍</p>
+            }
+
+            <form asp-action="AddServiceArea" method="post" class="mt-3">
+                <input type="hidden" name="userId" value="@driver.UserId" />
+                <div class="form-row">
+                    <div class="col">
+                        <input type="text" name="serviceCity" class="form-control" placeholder="縣市" />
+                    </div>
+                    <div class="col">
+                        <input type="text" name="serviceDistrict" class="form-control" placeholder="行政區" />
+                    </div>
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary">新增服務範圍</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+}

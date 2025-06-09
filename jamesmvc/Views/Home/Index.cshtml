@@ -1,0 +1,19 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+   
+}
+<h3>查詢物流單號</h3>
+
+<form asp-action="Search" method="post" class="form-inline mt-2 mb-4">
+    <div class="form-group me-2">
+        <input type="text" name="orderNumber" class="form-control" placeholder="請輸入物流單號" required />
+    </div>
+    <button type="submit" class="btn btn-primary">查詢</button>
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}

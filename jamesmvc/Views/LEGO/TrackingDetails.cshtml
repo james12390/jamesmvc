@@ -1,0 +1,122 @@
+﻿@model jamesmvc.Models.LogisticsTrackingViewModel
+@Model.Order.OrderNumber
+@{
+    var scheme = Context?.Request?.Scheme ?? "https";
+    var fullUrl = Url.Action("Search", "LEGO", new { orderNumber = Model.Order.OrderNumber },scheme);
+}
+<head>
+    <style>
+        .progress-step {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            flex-grow: 1;
+            text-align: center;
+            position: relative;
+        }
+
+         .step::before {
+                content: '';
+                position: absolute;
+                top: 15px;
+                left: -50%;
+                height: 4px;
+                width: 100%;
+                background-color: #ccc;
+                z-index: -1;
+         }
+
+        .step:first-child::before {
+            display: none;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin: 0 auto;
+            line-height: 30px;
+            color: white;
+        }
+
+        .step.active::before {
+            background-color: #28a745;
+        }
+
+        .step-label {
+            margin-top: 5px;
+        }
+
+        .step.active .step-label {
+            font-weight: bold;
+            color: #28a745;
+        }
+        .progress-step {
+            position: relative;
+        }
+    </style>
+</head>
+<h2>物流單追蹤資訊</h2>
+
+<table class="table table-bordered">
+    <tr><th>物流單號</th><td>@Model.Order.OrderNumber</td></tr>
+    <tr><th>收件人</th><td>@Model.Order.ReceiverName</td></tr>
+    <tr><th>寄件人</th><td>@Model.Order.SenderName</td></tr>
+    <tr><th>預計配送日</th><td>@Model.Order.DeliveryDate.ToString("yyyy-MM-dd")</td></tr>
+</table>
+@{
+    var latestStatus = Model.TrackingRecords.FirstOrDefault()?.Status ?? "";
+    Func<string, bool> isActive = (statusName) =>
+    {
+        var order = new List<string> { "已接單", "已出發", "配送中", "已簽收" };
+        var currentIndex = order.IndexOf(latestStatus);
+        var thisIndex = order.IndexOf(statusName);
+        return thisIndex >= 0 && thisIndex <= currentIndex;
+    };
+}
+<h4>配送進度</h4>
+@if (Model.TrackingRecords.Any())
+{
+    <ul class="list-group">
+        @foreach (var record in Model.TrackingRecords)
+        {
+            <li class="list-group-item">
+                <strong>@record.Status</strong> - @record.Location (@record.Timestamp.ToString("yyyy-MM-dd HH:mm"))
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>尚無追蹤紀錄。</p>
+}
+<p class="mt-3">
+    目前狀態：<strong>@latestStatus</strong>
+</p>
+<div class="progress-step">
+    <div class="step @(isActive("已接單") ? "active" : "")">
+        <div class="step-circle">1</div>
+        <div class="step-label">已接單</div>
+    </div>
+    <div class="step @(isActive("已出發") ? "active" : "")">
+        <div class="step-circle">2</div>
+        <div class="step-label">已出發</div>
+    </div>
+    <div class="step @(isActive("配送中") ? "active" : "")">
+        <div class="step-circle">3</div>
+        <div class="step-label">配送中</div>
+    </div>
+    <div class="step @(isActive("已簽收") ? "active" : "")">
+        <div class="step-circle">4</div>
+        <div class="step-label">已簽收</div>
+    </div>
+</div>
+
+<p>
+    <img src="https://api.qrserver.com/v1/create-qr-code/?data=@fullUrl&size=150x150" alt="QR Code">
+</p>

@@ -1,0 +1,38 @@
+﻿@model IEnumerable<jamesmvc.Models.LogisticsOrder>
+
+@{
+    ViewData["Title"] = "物流單清單";
+}
+
+<h2>物流單清單</h2>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>單號</th>
+            <th>寄件人</th>
+            <th>收件人</th>
+            <th>預計送達日</th>
+            <th>物品描述</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.OrderNumber</td>
+                <td>@order.SenderName</td>
+                <td>@order.ReceiverName</td>
+                <td>@order.DeliveryDate.ToShortDateString()</td>
+                <td>@order.ItemDescription</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-primary" asp-action="Create">新增物流單</a>

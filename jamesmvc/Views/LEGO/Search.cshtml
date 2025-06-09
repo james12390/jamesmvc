@@ -1,0 +1,20 @@
+﻿@{
+    ViewData["Title"] = "查詢物流單";
+}
+
+<h2>查詢物流單號</h2>
+
+<form asp-action="Search" method="post">
+    <div class="form-group">
+        <label for="orderNumber">物流單號：</label>
+        <input type="text" name="orderNumber" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">查詢</button>
+</form>
+<a class="btn btn-primary" asp-action="Create">新增物流單</a>
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger mt-3">
+        @ViewBag.Error
+    </div>
+}
