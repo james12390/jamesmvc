@@ -1,6 +1,6 @@
 ﻿services:
   - type: web
-    name: logitrack-web
+    name: jamesmvc-web
     env: dotnet
     plan: free
     region: singapore
