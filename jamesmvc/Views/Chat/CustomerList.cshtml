@@ -1,0 +1,37 @@
+﻿@model List<jamesmvc.Models.CustomerChatUserViewModel>
+@{
+    ViewData["Title"] = "客戶聊天室列表";
+}
+<style>
+    main {
+        padding-top: 100px !important;
+        min-height: 100vh;
+    }
+</style>
+<main>
+<h2>📋 客戶對話清單</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>姓名</th>
+            <th>Email</th>
+            <th>動作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in Model)
+        {
+            <tr>
+                <td>@customer.FullName</td>
+                <td>@customer.Email</td>
+                <td>
+                    <a asp-controller="Chat" asp-action="Admin" asp-route-customerId="@customer.UserId" class="btn btn-sm btn-primary">
+                        查看對話
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+</main>

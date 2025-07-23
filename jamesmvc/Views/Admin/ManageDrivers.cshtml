@@ -3,7 +3,13 @@
 @{
     ViewData["Title"] = "管理司機服務範圍";
 }
-
+<style>
+    main {
+        padding-top: 100px !important;
+        min-height: 100vh;
+    }
+</style>
+<main>
 <h2>管理司機服務範圍</h2>
 
 @if (TempData["Success"] != null)
@@ -19,7 +25,7 @@
 {
     <div class="card mb-3">
         <div class="card-header">
-            @driver.Email
+                <strong>@driver.FullName</strong>（@driver.Email）
         </div>
         <div class="card-body">
             <h5>目前服務範圍：</h5>
@@ -28,7 +34,7 @@
                 <ul>
                     @foreach (var profile in driver.Profiles)
                     {
-                        <li>@profile.ServiceCity @profile.ServiceDistrict</li>
+                            <li>@(profile.ServiceCity ?? "[未填縣市]") @(profile.ServiceDistrict ?? "[未填行政區]")</li>
                     }
                 </ul>
             }
@@ -54,3 +60,4 @@
         </div>
     </div>
 }
+</main>

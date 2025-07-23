@@ -22,7 +22,7 @@ else
         <thead>
             <tr>
                 <th>單號</th>
-                <th>收件人</th>
+                <th>寄件人</th>
                 <th>地址</th>
                 <th>指派司機</th>
             </tr>
@@ -33,7 +33,7 @@ else
                 <tr>
                     <td>@order.OrderNumber</td>
                     <td>@order.ReceiverName</td>
-                    <td>@($"{order.ReceiverCity}{order.ReceiverDistrict} {order.ReceiverAddress}")</td>
+                    <td>@($"{order.SenderCity}{order.SenderDistrict} {order.SenderAddress}")</td>
                     <td>
                         <form asp-action="AssignDriver" method="post" class="form-inline">
                             <input type="hidden" name="orderId" value="@order.Id" />

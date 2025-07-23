@@ -5,6 +5,7 @@ using jamesmvc.Data;
 using jamesmvc.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using jamesmvc.Services;
+using jamesmvc.Hubs;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -25,6 +26,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 builder.Services.AddControllersWithViews();
+builder.Services.AddSignalR();
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddTransient<IEmailSender, MailtrapEmailSender>();
@@ -60,13 +63,14 @@ using (var scope = app.Services.CreateScope())
         }
     }
 }
+
 // Middlewares
-if (!app.Environment.IsDevelopment())
+/*if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
-}
-
+}*/
+app.UseDeveloperExceptionPage();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
@@ -78,5 +82,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Homepage}/{id?}");
 
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();

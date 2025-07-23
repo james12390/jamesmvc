@@ -4,14 +4,268 @@
 @{
    
 }
-<h3>查詢物流單號</h3>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>包裹查詢 - James宅配</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<form asp-action="Search" method="post" class="form-inline mt-2 mb-4">
-    <div class="form-group me-2">
-        <input type="text" name="orderNumber" class="form-control" placeholder="請輸入物流單號" required />
-    </div>
-    <button type="submit" class="btn btn-primary">查詢</button>
-</form>
+        /* Main Content */
+        main {
+            padding-top: 100px !important;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .delivery-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+            margin-bottom: 40px;
+        }
+
+
+        .container1 {
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            animation: slideUp 0.6s ease-out;
+        }
+
+
+
+        .header1-section {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header1-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.05) 10px,
+                rgba(255, 255, 255, 0.05) 20px
+            );
+            animation: drift 20s linear infinite;
+        }
+
+
+       .header1-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header1-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-section {
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        .search-form {
+            opacity: 1;
+        }
+
+        .search-group {
+            margin-bottom: 30px;
+        }
+
+        .search-label {
+            display: block;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 20px 25px;
+            border: 2px solid #e1e5e9;
+            border-radius: 15px;
+            font-size: 1.2rem;
+            text-align: center;
+            background: #fafbfc;
+            letter-spacing: 1px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4facfe;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(79, 172, 254, 0.1);
+        }
+
+        .search-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-btn:hover {
+            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        }
+
+        .search-tips {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 5px solid #4facfe;
+        }
+
+        .search-tips h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .tips-list {
+            list-style: none;
+            text-align: left;
+        }
+
+        .tips-list li {
+            margin-bottom: 10px;
+            color: #666;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .tips-list li::before {
+            content: '💡';
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .example-codes {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .example-code {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #e1e5e9;
+            cursor: pointer;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .example-code:hover {
+            border-color: #4facfe;
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.2);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4facfe;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 15px;
+        }
+
+
+    </style>
+</head>
+
+    <main>
+        <form asp-action="Search" method="post" class="form-inline mt-2 mb-4">
+        <div class="container1">
+            <div class="header1-section">
+                <h1>🔍 包裹查詢</h1>
+                <p>輸入您的追蹤號碼，即時查詢包裹狀態</p>
+            </div>
+            
+            <div class="search-section">
+                <form class="search-form" onsubmit="searchPackage(event)">
+                    <div class="search-group">
+                        <label class="search-label" for="trackingNumber">追蹤號碼</label>
+                        <input type="text" name="orderNumber"  class="search-input"  placeholder="JM123456789"  maxlength="20" required >
+                    </div>
+                    
+                    <button type="submit" class="search-btn">
+                        🚀 開始查詢
+                    </button>
+                </form>
+
+                <div class="loading" id="loading">
+                    <div class="loading-spinner"></div>
+                    <p>正在查詢中，請稍候...</p>
+                </div>
+
+                <div class="search-tips">
+                    <h4>📋 查詢小貼士</h4>
+                    <ul class="tips-list">
+                        <li>追蹤號碼通常以 "LOGI" 開頭，後面跟隨12位數字</li>
+                        <li>請確保輸入的號碼完整且正確</li>
+                        <li>如有疑問，請聯繫客服 0800-123-456</li>
+                    </ul>
+                    
+                    <div class="example-codes">
+                        <div class="example-code" onclick="fillExample('LOGI20250524-001')">LOGI20250524-001</div>
+                        <div class="example-code" onclick="fillExample('LOGI20250607-001')">LOGI20250607-001</div>
+                        <div class="example-code" onclick="fillExample('LOGI20250511-001')">LOGI20250511-001</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </main>
 
 @if (ViewBag.Error != null)
 {

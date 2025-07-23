@@ -2,7 +2,13 @@
 @{
     ViewData["Title"] = "管理員首頁";
 }
-
+<style>
+    main {
+        padding-top: 100px !important;
+        min-height: 100vh;
+    }
+</style>
+<main>
 <h2>管理員控制台</h2>
 
 <ul class="nav nav-tabs mt-3">
@@ -12,7 +18,11 @@
     <li class="nav-item">
         <a class="nav-link" asp-controller="Admin" asp-action="ManageDrivers">司機服務範圍</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link" asp-controller="Admin" asp-action="RegisterEmployee">員工註冊</a>
+    </li>
 </ul>
+
 
 <div class="mt-4">
     <p>你可以在上方切換到其他功能。</p>
@@ -50,3 +60,5 @@
         }
     </tbody>
 </table>
+
+</main>

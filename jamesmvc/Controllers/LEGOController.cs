@@ -20,8 +20,8 @@ namespace jamesmvc.Controllers
             _context = context;
             _userManager = userManager;
         }
-      
 
+        //IActionResult 動作結果
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -29,8 +29,7 @@ namespace jamesmvc.Controllers
             var today = DateTime.Today;
             var todayStr = today.ToString("yyyyMMdd");
 
-            var countToday = await _context.LogisticsOrder
-                .CountAsync(o => o.OrderNumber.StartsWith($"LOGI{todayStr}"));
+            var countToday = await _context.LogisticsOrder.CountAsync(o => o.OrderNumber.StartsWith($"LOGI{todayStr}"));
 
             var sequence = countToday + 1;
             var orderNumber = $"LOGI{todayStr}-{sequence:D3}";
@@ -43,7 +42,7 @@ namespace jamesmvc.Controllers
 
             return View(viewModel);
         }
-
+        //Async 讓非同步函式的內部以同步的方式執行非同步 可以使用await
         [HttpPost]
         public async Task<IActionResult> CreateAsync(LogisticsOrder model)
         {
@@ -66,6 +65,11 @@ namespace jamesmvc.Controllers
                 SenderDistrict = model.SenderDistrict,
                 ReceiverCity = model.ReceiverCity,
                 ReceiverDistrict = model.ReceiverDistrict,
+                Priority = model.Priority,
+                PackageSize = model.PackageSize,
+                DeliveryTimeSlot = model.DeliveryTimeSlot,
+                Description = model.Description,
+
             };
             var driver = await _context.DriverProfiles.FirstOrDefaultAsync(d => d.ServiceCity == order.ReceiverCity && d.ServiceDistrict == order.ReceiverDistrict);
             if (driver != null)
@@ -81,21 +85,45 @@ namespace jamesmvc.Controllers
 
 
             TempData["Success"] = $"物流單已建立，單號為：{order.OrderNumber}";
-            return RedirectToAction("Search");
+            return RedirectToAction("OrderConfirmation","LEGO", new { order.OrderNumber });
         }
 
-        public async Task<IActionResult> Index()
+
+        [HttpGet]
+        public async Task<IActionResult> OrderConfirmation(string orderNumber)
         {
-            var orders = await _context.LogisticsOrder
-                .OrderByDescending(o => o.Id)
-                .ToListAsync();
 
-            return View(orders);
+            var order = await _context.LogisticsOrder.FirstOrDefaultAsync(o => o.OrderNumber == orderNumber);
+
+            if (order == null)
+                return NotFound("查無此單號");
+
+
+            var model = new LogisticsOrderssViewModel
+            {
+                Order = order
+            }; 
+;
+
+            return View("OrderConfirmation", model); // 顯示進度的頁面
         }
+
+        public IActionResult Index(string id)
+        {
+            string sql = "select count() from LogisticsOrder";
+            var count = _context.LogisticsOrder.FromSqlRaw("select count() from LogisticsOrder");
+            return View();
+        }
+
+
+
         public IActionResult Search()
         {
             return View();
         }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> Search(string orderNumber)
@@ -116,7 +144,11 @@ namespace jamesmvc.Controllers
 
             return RedirectToAction("Details", "LEGO", new { orderNumber });
         }
-        [AllowAnonymous]
+
+
+
+
+        [AllowAnonymous]//無條件開放匿名存取
         [HttpGet("/LEGO/Details/{orderNumber}")]
         public async Task<IActionResult> Details(string orderNumber)
         {
@@ -137,6 +169,9 @@ namespace jamesmvc.Controllers
             return View("TrackingDetails", model); // 顯示進度的頁面
         }
 
+
+
+
         public async Task<IActionResult> Edit()
         {
             var userId = _userManager.GetUserId(User);
@@ -146,6 +181,8 @@ namespace jamesmvc.Controllers
 
             return View(profile);
         }
+
+
   
         [HttpPost]
         public async Task<IActionResult> Edit(CustomerProfile model)
@@ -181,7 +218,7 @@ namespace jamesmvc.Controllers
             Console.WriteLine(profile.FullName);
             ViewBag.Message = "修改成功";
             return View(profile);
-        }
+        }    
     }
 }   
 

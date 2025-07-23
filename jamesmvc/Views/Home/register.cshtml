@@ -1,54 +1,564 @@
 ﻿@model jamesmvc.Models.RegisterViewModel
 
-@*
+@{
+    Layout = null;
     ViewData["Title"] = "Register Page";
-*@
-<h2>註冊</h2>
+}
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/jamesmvc.styles.css" asp-append-version="true" />
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-<form asp-action="Register" method="post">
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow-x: hidden;
+        padding: 20px 0;
+    }
+
+    /* Animated background elements */
+    .bg-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .bg-circle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        animation: float 8s ease-in-out infinite;
+    }
+
+        .bg-circle:nth-child(1) {
+            width: 120px;
+            height: 120px;
+            top: 15%;
+            left: 8%;
+            animation-delay: 0s;
+        }
+
+        .bg-circle:nth-child(2) {
+            width: 80px;
+            height: 80px;
+            top: 70%;
+            right: 15%;
+            animation-delay: 3s;
+        }
+
+        .bg-circle:nth-child(3) {
+            width: 100px;
+            height: 100px;
+            bottom: 15%;
+            left: 15%;
+            animation-delay: 6s;
+        }
+
+        .bg-circle:nth-child(4) {
+            width: 60px;
+            height: 60px;
+            top: 8%;
+            right: 25%;
+            animation-delay: 2s;
+        }
+
+        .bg-circle:nth-child(5) {
+            width: 90px;
+            height: 90px;
+            top: 45%;
+            left: 5%;
+            animation-delay: 4s;
+        }
+
+    /* Registration container */
+    .register-container {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        padding: 40px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        position: relative;
+        z-index: 10;
+        animation: slideUp 0.8s ease;
+        margin: 20px;
+    }
+
+    .register-header {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+    .logo {
+        font-size: 32px;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+    }
+
+    .register-subtitle {
+        color: #666;
+        font-size: 16px;
+    }
+
+    /* Form styles */
+    .register-form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-group {
+        position: relative;
+        width: 100%;
+    }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+    .form-input {
+        width: 100%;
+        padding: 18px 20px;
+        border: 2px solid #e1e5e9;
+        border-radius: 12px;
+        font-size: 16px;
+        background: white;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+        .form-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+            .form-input:focus + .form-label,
+            .form-input:not(:placeholder-shown) + .form-label {
+                transform: translateY(-32px) scale(0.85);
+                color: #667eea;
+                background: white;
+                padding: 0 8px;
+            }
+
+    .form-label {
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: transparent;
+        color: #999;
+        font-size: 16px;
+        pointer-events: none;
+        transition: all 0.3s ease;
+    }
+
+    .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 18px;
+        color: #999;
+        transition: color 0.3s ease;
+    }
+
+        .password-toggle:hover {
+            color: #667eea;
+        }
+
+    /* Validation styles */
+    .form-input.valid {
+        border-color: #27ae60;
+        box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+    }
+
+    .form-input.invalid {
+        border-color: #e74c3c;
+        box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+    }
+
+    .validation-message {
+        font-size: 12px;
+        margin-top: 5px;
+        transition: all 0.3s ease;
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+        .validation-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .validation-message.error {
+            color: #e74c3c;
+        }
+
+        .validation-message.success {
+            color: #27ae60;
+        }
+
+    /* Password strength indicator */
+    .password-strength {
+        margin-top: 8px;
+        display: none;
+    }
+
+        .password-strength.show {
+            display: block;
+        }
+
+    .strength-bar {
+        height: 4px;
+        background: #e1e5e9;
+        border-radius: 2px;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+
+    .strength-fill {
+        height: 100%;
+        width: 0;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+    }
+
+        .strength-fill.weak {
+            width: 25%;
+            background: #e74c3c;
+        }
+
+        .strength-fill.fair {
+            width: 50%;
+            background: #f39c12;
+        }
+
+        .strength-fill.good {
+            width: 75%;
+            background: #f1c40f;
+        }
+
+        .strength-fill.strong {
+            width: 100%;
+            background: #27ae60;
+        }
+
+    .strength-text {
+        font-size: 12px;
+        color: #666;
+    }
+
+    /* Terms checkbox */
+    .checkbox-container {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin: 10px 0;
+    }
+
+    .custom-checkbox {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #e1e5e9;
+        border-radius: 4px;
+        position: relative;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+        .custom-checkbox input {
+            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+            .custom-checkbox input:checked + .checkmark {
+                background: #667eea;
+                border-color: #667eea;
+            }
+
+                .custom-checkbox input:checked + .checkmark::after {
+                    opacity: 1;
+                    transform: rotate(45deg) scale(1);
+                }
+
+    .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+        .checkmark::after {
+            content: '';
+            position: absolute;
+            left: 6px;
+            top: 2px;
+            width: 4px;
+            height: 8px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            opacity: 0;
+            transform: rotate(45deg) scale(0);
+            transition: all 0.3s ease;
+        }
+
+    .checkbox-label {
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+    }
+
+        .checkbox-label a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+            .checkbox-label a:hover {
+                text-decoration: underline;
+            }
+
+    /* Register button */
+    .register-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 18px;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        margin-top: 10px;
+    }
+
+        .register-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .register-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .register-button.loading {
+            pointer-events: none;
+        }
+
+        .register-button .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        .register-button.loading .spinner {
+            display: inline-block;
+        }
+
+    /* Login link */
+    .login-link {
+        text-align: center;
+        margin-top: 25px;
+        color: #666;
+        font-size: 14px;
+    }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+            .login-link a:hover {
+                color: #764ba2;
+                text-decoration: underline;
+            }
+
+    /* Messages */
+    .message {
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        margin-bottom: 20px;
+        display: none;
+        animation: slideDown 0.3s ease;
+    }
+
+    .error-message {
+        background: #fee;
+        color: #c33;
+        border: 1px solid #fcc;
+    }
+
+    .success-message {
+        background: #efe;
+        color: #393;
+        border: 1px solid #cfc;
+    }
+
+    /* Progress indicator */
+    .progress-indicator {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 25px;
+    }
+
+    .progress-step {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #e1e5e9;
+        transition: all 0.3s ease;
+    }
+
+        .progress-step.active {
+            background: #667eea;
+            transform: scale(1.2);
+        }
+
+        .progress-step.completed {
+            background: #27ae60;
+        }
+
+    
+</style>
+
+    <div class="bg-animation">
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" type="password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
+    <div class="register-container">
+        <div class="register-header">
+            <div class="logo">James物流</div>
+            <p class="register-subtitle">Create your account and start receiving deliveries</p>
+        </div>
+
+        <div class="progress-indicator">
+            <div class="progress-step active"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+        </div>
+
+        <div class="message error-message" id="errorMessage"></div>
+        <div class="message success-message" id="successMessage"></div>
+
+    <form asp-action="Register" method="post">
+            <div class="form-group full-width">
+            <div class="form-group">
+                <input type="text" class="form-input" id="firstName" placeholder=" " required asp-for="FullName">
+                <label class="form-label" for="firstName" asp-for="FullName">Full Name</label>
+                <span asp-validation-for="FullName" class="text-danger" />
+                <div class="validation-message" id="firstNameMsg"></div>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <input type="email" class="form-input" id="email" placeholder=" " required asp-for="Email">
+                <label class="form-label" for="email" asp-for="Email">Email Address</label>
+                <span asp-validation-for="Email" class="text-danger"></span>
+                <div class="validation-message" id="emailMsg"></div>
+            </div>
+
+            <div class="form-group full-width">
+                <input type="tel" class="form-input" id="phone" placeholder=" " required asp-for="PhoneNumber">
+                <label class="form-label" for="phone" asp-for="PhoneNumber">Phone Number</label>
+                <div class="validation-message" id="phoneMsg"></div>
+            </div>
+
+            <div class="form-group full-width">
+                <input type="text" class="form-input" id="address" placeholder=" " required asp-for="Address">
+                <label class="form-label" for="address" asp-for="Address">Address</label>
+                <div class="validation-message" id="addressMsg"></div>
+            </div>
+
+            <div class="form-group full-width">
+                <input type="password" class="form-input" id="password" placeholder=" " required asp-for="Password">
+                <label class="form-label" for="password" asp-for="Password">Password</label>
+                <div class="validation-message" id="passwordMsg"></div>
+                <div class="password-strength" id="passwordStrength">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <div class="strength-text" id="strengthText">Password strength</div>
+                </div>
+            </div>
+
+            <div class="form-group full-width">
+                <input type="password" class="form-input" id="confirmPassword" placeholder=" " required asp-for="ConfirmPassword">
+                <label class="form-label" for="confirmPassword" asp-for="ConfirmPassword">Confirm Password</label>
+                <div class="validation-message" id="confirmPasswordMsg"></div>
+            </div>
+
+            <button type="submit" class="register-button">
+                <div class="spinner"></div>
+                Create Account
+            </button>
+        </form>
+
+        <div class="login-link">
+            已有帳號？<a asp-action="Login">登入</a>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label asp-for="ConfirmPassword"></label>
-        <input asp-for="ConfirmPassword" class="form-control" type="password" />
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="FullName"></label>
-        <input asp-for="FullName" class="form-control" />
-        <span asp-validation-for="FullName" class="text-danger" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="Address"></label>
-        <input asp-for="Address" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="PhoneNumber"></label>
-        <input asp-for="PhoneNumber" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">註冊</button>
-</form>
-
-<div>
-    已有帳號？<a asp-action="Login">登入</a>
-</div>
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>

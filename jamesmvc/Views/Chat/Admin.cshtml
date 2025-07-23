@@ -1,0 +1,47 @@
+﻿@model string
+@{
+    var customerId = ViewBag.CustomerId as string;
+    var customerName = ViewBag.CustomerName as string;
+}
+<main>
+<h2>與客戶聊天</h2>
+<p><b>你：</b>@Model</p>
+<p><b>客戶 ID：</b>@customerId</p>
+
+    <div id="chatBox" style="height:300px; overflow-y:auto; border:1px solid #ccc; padding:10px;">
+        @if (ViewBag.History != null)
+        {
+            foreach (var msg in (List<jamesmvc.Models.ChatMessage>)ViewBag.History)
+            {
+                <div><strong>@msg.SenderId:</strong> @msg.Message</div>
+            }
+        }
+    </div>
+
+<textarea id="message" class="form-control"></textarea>
+<button id="sendBtn" class="btn btn-success mt-2">回覆</button>
+</main>
+@section Scripts {
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+<script>
+    const adminId = "@Model";
+    const customerId = "@customerId";
+
+    const conn = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+    conn.start().then(() => conn.invoke("JoinRoom", adminId).then(() =>
+        conn.invoke("JoinRoom", customerId)
+    ));
+
+    conn.on("ReceiveMessage", (from, msg) => {
+        const box = document.getElementById("chatBox");
+        box.innerHTML += `<div><b>${from}</b>: ${msg}</div>`;
+        box.scrollTop = box.scrollHeight;
+    });
+
+    document.getElementById("sendBtn").addEventListener("click", () => {
+        const msg = document.getElementById("message").value;
+        conn.invoke("SendPrivateMessage", adminId, customerId, msg);
+        document.getElementById("message").value = '';
+    });
+</script>
+}

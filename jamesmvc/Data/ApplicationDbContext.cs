@@ -14,7 +14,8 @@ namespace jamesmvc.Data
         public DbSet<LogisticsOrder> LogisticsOrder { get; set; }
         public DbSet<DriverProfile> DriverProfiles { get; set; }
         public DbSet<TrackingRecord> TrackingRecords { get; set; }
-
         public DbSet<CustomerProfile> CustomerProfiles { get; set; }
+        public DbSet<CustomerMessage> CustomerMessages { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
     }
 }

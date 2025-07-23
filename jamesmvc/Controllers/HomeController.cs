@@ -35,11 +35,13 @@ namespace jamesmvc.Controllers
             if (!ModelState.IsValid) return View(model);
 
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+
             if (result.Succeeded == false)
             {
                 ModelState.AddModelError(string.Empty, "登入失敗，請檢查帳號密碼");
                 return View(model);
             }
+
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
@@ -55,7 +57,7 @@ namespace jamesmvc.Controllers
                 }
                 else if (await _userManager.IsInRoleAsync(user, "Customer"))
                 {
-                    return RedirectToAction("Search", "LEGO");
+                    return RedirectToAction("Index", "LEGO");
                 }
 
                 // 如果沒有角色或預設 fallback
@@ -73,7 +75,7 @@ namespace jamesmvc.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Login", "Home");
+            return RedirectToAction("Homepage", "Home");
         }
 
         public IActionResult Register() => View();
@@ -203,9 +205,12 @@ namespace jamesmvc.Controllers
 
             return View(model);
         }
-        //查詢單號
+
+
+        
         public IActionResult Index() => View();
 
+        //查詢單號
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Search(string orderNumber)

@@ -1,0 +1,59 @@
+﻿@model IEnumerable<jamesmvc.Models.LogisticsOrder>
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Mvc.Rendering
+@inject UserManager<IdentityUser> UserManager
+@inject SignInManager<IdentityUser> SignInManager
+@{
+    ViewData["Title"] = $"未派單 - {ViewBag.City}";
+    var drivers = ViewBag.Drivers as List<SelectListItem>; // 來自 Controller
+}
+<style>
+    main {
+        padding-top: 100px !important;
+        min-height: 100vh;
+    }
+</style>
+<h2>@ViewData["Title"]</h2>
+<main>
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success">@TempData["Message"]</div>
+    }
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>單號</th>
+                <th>寄件人</th>
+                <th>地址</th>
+                <th>預計配送日</th>
+                <th>指派司機</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model)
+            {
+                <tr>
+                    <td>@order.OrderNumber</td>
+                    <td>@order.ReceiverName</td>
+                    <td>@order.SenderCity @order.SenderDistrict @order.SenderAddress</td>
+                    <td>@order.DeliveryDate.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <form asp-action="AssignssDriver" method="post" class="form-inline">
+                            <input type="hidden" name="orderId" value="@order.Id" />
+                            <select name="driverId" class="form-control">
+                                @foreach (var driver in drivers)
+                                {
+                                    <option value="@driver.Value">@driver.Text</option>
+                                }
+                            </select>
+                            <button type="submit" class="btn btn-sm btn-success ml-1">指派</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+<a asp-action="UnassignedByCity" class="btn btn-secondary">← 回上頁</a>
+</main>

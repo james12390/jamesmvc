@@ -1,51 +1,490 @@
 ﻿@model jamesmvc.Models.LoginViewModel
 @{
+    Layout = null;
     ViewData["Title"] = "Home Page";
 }
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/jamesmvc.styles.css" asp-append-version="true" />
+    <title>Login - SwiftDelivery</title>
+    <style>
 
-<h2>登入</h2>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<form asp-action="Login" method="post">
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
 
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" type="password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
+        /* Animated background elements */
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
 
-    <div class="form-group form-check">
-        <input asp-for="RememberMe" class="form-check-input" />
-        <label asp-for="RememberMe" class="form-check-label"></label>
-    </div>
-    @if (!ViewData.ModelState.IsValid)
-{
-    <div class="alert alert-danger">
-        <ul>
-            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-            {
-                <li>@error.ErrorMessage</li>
+        .bg-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+            .bg-circle:nth-child(1) {
+                width: 100px;
+                height: 100px;
+                top: 20%;
+                left: 10%;
+                animation-delay: 0s;
             }
-        </ul>
+
+            .bg-circle:nth-child(2) {
+                width: 150px;
+                height: 150px;
+                top: 60%;
+                right: 10%;
+                animation-delay: 2s;
+            }
+
+            .bg-circle:nth-child(3) {
+                width: 80px;
+                height: 80px;
+                bottom: 20%;
+                left: 20%;
+                animation-delay: 4s;
+            }
+
+            .bg-circle:nth-child(4) {
+                width: 120px;
+                height: 120px;
+                top: 10%;
+                right: 30%;
+                animation-delay: 1s;
+            }
+
+        /* Login container */
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            position: relative;
+            z-index: 10;
+            animation: slideUp 0.8s ease;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .logo1 {
+            font-size: 32px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .login-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Form styles */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 18px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+            .form-input:focus {
+                border-color: #667eea;
+                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+                transform: translateY(-2px);
+            }
+
+                .form-input:focus + .form-label,
+                .form-input:not(:placeholder-shown) + .form-label {
+                    transform: translateY(-32px) scale(0.85);
+                    color: #667eea;
+                    background: white;
+                    padding: 0 8px;
+                }
+
+        .form-label {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            color: #999;
+            font-size: 16px;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+            .password-toggle:hover {
+                color: #667eea;
+            }
+
+        /* Checkbox and forgot password */
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #e1e5e9;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .custom-checkbox input {
+                opacity: 0;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                cursor: pointer;
+            }
+
+                .custom-checkbox input:checked + .checkmark {
+                    background: #667eea;
+                    border-color: #667eea;
+                }
+
+                    .custom-checkbox input:checked + .checkmark::after {
+                        opacity: 1;
+                        transform: rotate(45deg) scale(1);
+                    }
+
+        .checkmark {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+            .checkmark::after {
+                content: '';
+                position: absolute;
+                left: 5px;
+                top: 1px;
+                width: 4px;
+                height: 8px;
+                border: solid white;
+                border-width: 0 2px 2px 0;
+                opacity: 0;
+                transform: rotate(45deg) scale(0);
+                transition: all 0.3s ease;
+            }
+
+        .checkbox-label {
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+        }
+
+        .forgot-password {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+            .forgot-password:hover {
+                color: #764ba2;
+                text-decoration: underline;
+            }
+
+        /* Login button */
+        .login-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .login-button:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+            }
+
+            .login-button:active {
+                transform: translateY(0);
+            }
+
+            .login-button.loading {
+                pointer-events: none;
+            }
+
+            .login-button .spinner {
+                display: none;
+                width: 20px;
+                height: 20px;
+                border: 2px solid transparent;
+                border-top: 2px solid white;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin-right: 10px;
+            }
+
+            .login-button.loading .spinner {
+                display: inline-block;
+            }
+
+        /* Social login */
+        .divider {
+            text-align: center;
+            margin: 25px 0;
+            position: relative;
+            color: #999;
+            font-size: 14px;
+        }
+
+            .divider::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: #e1e5e9;
+                z-index: 1;
+            }
+
+            .divider span {
+                background: rgba(255, 255, 255, 0.95);
+                padding: 0 15px;
+                position: relative;
+                z-index: 2;
+            }
+
+        .social-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-button {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            background: white;
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            gap: 8px;
+        }
+
+            .social-button:hover {
+                border-color: #667eea;
+                transform: translateY(-2px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .social-button.google:hover {
+                border-color: #db4437;
+            }
+
+            .social-button.facebook:hover {
+                border-color: #4267b2;
+            }
+
+        /* Sign up link */
+        .signup-link {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 14px;
+        }
+
+            .signup-link a {
+                color: #667eea;
+                text-decoration: none;
+                font-weight: 600;
+                transition: color 0.3s ease;
+            }
+
+                .signup-link a:hover {
+                    color: #764ba2;
+                    text-decoration: underline;
+                }
+
+        /* Error message */
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+            animation: shake 0.5s ease;
+        }
+
+        .success-message {
+            background: #efe;
+            color: #393;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+       
+      
+    </style>
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
+        <div class="bg-circle"></div>
     </div>
-}
-    <button type="submit" class="btn btn-primary">登入</button>
-</form>
+<main>
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo1">James物流</div>
+            <p class="login-subtitle">Welcome back! Please sign in to your account</p>
+        </div>
 
-<div>
-    還沒有帳號？<a asp-action="Register">註冊</a>
-</div>
+        <div class="error-message" id="errorMessage">
+            Invalid email or password. Please try again.
+        </div>
 
-<p class="text-end small">
-    <a asp-action="ForgotPassword" asp-controller="Home">忘記密碼？</a>
-</p>
+        <div class="success-message" id="successMessage">
+            Login successful! Redirecting...
+        </div>
+    <form asp-action="Login" method="post" class="login-form" id="loginForm">
+            <div class="form-group">
+                <label asp-for="Email">信箱</label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+            </div>
+            }
+            <div class="form-group">
+                <label asp-for="Password">密碼</label>
+                <input asp-for="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
 
+            <div class="form-options">
+                <div class="checkbox-container">
+                    <div class="custom-checkbox">
+                        <input type="checkbox" id="rememberMe">
+                        <div class="checkmark"></div>
+                    </div>
+                    <label class="checkbox-label" for="rememberMe">記住密碼</label>
+                </div>
+            <a asp-action="ForgotPassword" asp-controller="Home">忘記密碼？</a>
+            </div>
+
+            <button type="submit" class="login-button" id="loginButton">
+                <div class="spinner"></div>
+                登入
+            </button>
+        </form>
+
+        <div class="signup-link">
+        還沒有帳號？<a asp-action="Register">註冊</a>
+        </div>
+    </div>
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
+        }    
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+    </main>
+</body>

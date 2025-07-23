@@ -1,38 +1,568 @@
-﻿@model IEnumerable<jamesmvc.Models.LogisticsOrder>
-
+﻿
 @{
-    ViewData["Title"] = "物流單清單";
+    ViewData["Title"] = "查詢物流單";
+}
+@{
 }
 
-<h2>物流單清單</h2>
 
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>單號</th>
-            <th>寄件人</th>
-            <th>收件人</th>
-            <th>預計送達日</th>
-            <th>物品描述</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Model)
-        {
-            <tr>
-                <td>@order.OrderNumber</td>
-                <td>@order.SenderName</td>
-                <td>@order.ReceiverName</td>
-                <td>@order.DeliveryDate.ToShortDateString()</td>
-                <td>@order.ItemDescription</td>
-            </tr>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        color: #333;
+        overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        padding: 10px 0;
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .logo {
+        font-size: 28px;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .nav-links {
+        display: flex;
+        list-style: none;
+        gap: 30px;
+    }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            position: relative;
         }
-    </tbody>
-</table>
 
-<a class="btn btn-primary" asp-action="Create">新增物流單</a>
+            .nav-links a:hover {
+                color: #667eea;
+            }
+
+            .nav-links a::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: -5px;
+                left: 0;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .nav-links a:hover::after {
+                width: 100%;
+            }
+
+            .nav-links a.active {
+                color: #667eea;
+            }
+
+                .nav-links a.active::after {
+                    width: 100%;
+                }
+
+    .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .logout-btn {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 20px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 0.9rem;
+    }
+
+        .logout-btn:hover {
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+    /* Main Content */
+    main {
+        margin-top: 80px;
+        padding: 40px 20px;
+        min-height: calc(100vh - 80px);
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .welcome-header {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        padding: 40px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .welcome-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .welcome-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+    .welcome-content {
+        padding: 40px;
+        text-align: center;
+    }
+
+    .member-info {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        margin-bottom: 30px;
+    }
+
+    .info-item {
+        text-align: center;
+    }
+
+    .info-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4facfe;
+        margin-bottom: 5px;
+    }
+
+    .info-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .dashboard-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .card-header {
+        padding: 25px 30px;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+        .card-icon.orders {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .card-icon.tracking {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card-icon.profile {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .card-icon.support {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+    .card-title {
+        flex: 1;
+    }
+
+        .card-title h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .card-title p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+    .card-content {
+        padding: 30px;
+    }
+
+    .card-actions {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .action-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 0.9rem;
+        flex: 1;
+        text-align: center;
+        min-width: 120px;
+    }
+
+        .action-btn:hover {
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .action-btn.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+            .action-btn.secondary:hover {
+                box-shadow: 0 8px 25px rgba(245, 87, 108, 0.3);
+            }
+
+    /* Recent Orders */
+    .recent-orders {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+
+    .section-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            flex: 1;
+        }
+
+    .view-all-btn {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        text-decoration: none;
+    }
+
+        .view-all-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+    .orders-list {
+        padding: 30px;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border: 1px solid #e1e5e9;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        background: #fafbfc;
+    }
+
+        .order-item:last-child {
+            margin-bottom: 0;
+        }
+
+    .order-info {
+        flex: 1;
+    }
+
+    .order-number {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .order-details {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .order-status {
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        min-width: 80px;
+        text-align: center;
+    }
+
+    .status-processing {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+    }
+
+    .status-shipped {
+        background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        color: white;
+    }
+
+    .status-delivered {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .no-orders {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+
+        .no-orders::before {
+            content: '📦';
+            display: block;
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+    /* Quick Actions */
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .quick-action {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+        .quick-action:hover {
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+    .quick-action-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+    }
+
+    .quick-action h4 {
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .quick-action p {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    /* Mobile Responsive */
+
+</style>
+<body>
+    <header>
+        <nav>
+            <div class="logo">James宅配</div>
+            <ul class="nav-links">
+                <li><a asp-area="" asp-controller="Home" asp-action="Homepage">首頁</a></li>
+                <li><a asp-area="" asp-controller="LEGO" asp-action="Index">包裹查詢</a></li>
+                <li><a href="#">帳號管理</a></li>
+            </ul>
+            <div class="user-menu">
+                <form asp-controller="Home" asp-action="Logout" method="post" class="form-inline">
+                    <button type="submit" class="logout-btn">登出</button>
+                </form>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <div class="welcome-header">
+                    <h1>👋 歡迎回來，</h1>
+                    <p>管理您的包裹和物流服務</p>
+                </div>
+                <div class="welcome-content">
+                    <div class="member-info">
+                        <div class="info-item">
+                            <div class="info-value"></div>
+                            <div class="info-label">本月訂單</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-value"></div>
+                            <div class="info-label">配送中</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-value"></div>
+                            <div class="info-label">總計訂單</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Cards -->
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon orders">📦</div>
+                        <div class="card-title">
+                            <h3>我的訂單</h3>
+                            <p>查看和管理您的所有訂單</p>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-actions">
+                            <a href="#" class="action-btn">查看全部</a>
+                            <a  class="action-btn secondary" asp-action="Create">新增訂單</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon profile">👤</div>
+                        <div class="card-title">
+                            <h3>個人資料</h3>
+                            <p>管理您的帳號資訊</p>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-actions">
+                            <a class="action-btn" asp-area="" asp-controller="LEGO" asp-action="Edit">編輯資料</a>
+                            <a href="#" class="action-btn secondary"></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <div class="card-icon support">💬</div>
+                        <div class="card-title">
+                            <h3>客服支援</h3>
+                            <p>獲得專業的協助和支援</p>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-actions">
+                            <a class="action-btn" sp-area="" asp-controller="Chat" asp-action="Customer">線上客服</a>
+                            <a href="#" class="action-btn secondary"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="recent-orders">
+                <div class="section-header">
+                    <h2>📋 最近訂單</h2>
+                    <a href="#" class="view-all-btn">查看全部</a>
+                </div>
+                <div class="orders-list">
+                    <div class="order-item">
+
+                    </div>
+                    <div class="order-item">
+
+                    </div>
+                    <div class="order-item">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+
