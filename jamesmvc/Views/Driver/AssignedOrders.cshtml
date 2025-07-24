@@ -1,4 +1,11 @@
 ﻿@model List<jamesmvc.Models.LogisticsOrder>
+<style>
+    main {
+        padding-top: 100px !important;
+        min-height: 100vh;
+    }
+</style>
+<main>
 <h2>指派給我的物流單</h2>
 @if (!Model.Any())
 {
@@ -39,3 +46,4 @@ else
         </tbody>
     </table>
 }
+</main>

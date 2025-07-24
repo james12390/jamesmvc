@@ -1,4 +1,11 @@
 ﻿@model jamesmvc.Models.TrackingRecord
+<style>
+    main {
+        padding-top: 100px !important;
+        min-height: 100vh;
+    }
+</style>
+<main>
 <h2>更新配送進度 - @ViewBag.OrderNumber</h2>
 
 <form asp-action="AddTracking" method="post">
@@ -24,3 +31,5 @@
     <button type="submit" class="btn btn-primary">提交紀錄</button>
     <a asp-action="AssignedOrders" class="btn btn-secondary">返回列表</a>
 </form>
+
+</main>
