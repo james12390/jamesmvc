@@ -4,6 +4,7 @@
 ## 功能
 
 - **會員登入功能**
+- ![](https://github.com/james12390/jamesmvc/edit/master/實作照片)
 - **宅配單號管理功能**
 - **司機指派功能**
 
