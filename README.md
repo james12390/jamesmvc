@@ -6,9 +6,11 @@
 
 - **會員登入功能**
   
- 1.會員登入畫面
+ 1.會員登入畫面：
+   
   
  ![](https://github.com/james12390/jamesmvc/blob/master/Implementation_photos/Member_Login/login.png)
+ 
  2.會員註冊畫面
   
  ![](https://github.com/james12390/jamesmvc/blob/master/Implementation_photos/Member_Login/register.png)
