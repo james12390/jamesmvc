@@ -20,7 +20,7 @@
   ![](https://github.com/james12390/jamesmvc/blob/master/Implementation_photos/Delivery_ordernumber/BuildComplete.png)
   3.查詢宅配單號
   
-  ![](https://github.com/james12390/jamesmvc/blob/master/Implementation_photos/Delivery_ordernumber/BuildComplete.png)
+  ![](https://github.com/james12390/jamesmvc/blob/master/Implementation_photos/Delivery_ordernumber/DeliveryTracking.png)
 - **司機指派功能**
   1.未指派訂單
   
